@@ -1,0 +1,1 @@
+#!/bin/bashfunction detect_os_type{    case "$OSTYPE"    esac}# $1=loc_dir $2=git_urlfunction update_hosts_repo{     }function # vim: se ai si et ts=4 sw=4 ft=sh :# EOF
