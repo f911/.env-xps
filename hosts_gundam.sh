@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/bin/bash
 
 # =============================================================================
@@ -72,3 +73,6 @@ gen_loc_and_url_arr
 
 # vim: se ai si et ts=4 sw=4 ft=sh :
 # EOF
+=======
+#!/bin/bashfunction detect_os_type{    case "$OSTYPE"    esac}# $1=loc_dir $2=git_urlfunction update_hosts_repo{     }function # vim: se ai si et ts=4 sw=4 ft=sh :# EOF
+>>>>>>> ec4e8931ce57110ae3f8d12a82e86d5ba399a5ac
