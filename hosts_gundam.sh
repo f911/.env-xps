@@ -15,25 +15,12 @@ REPO_NAME_LIST="highsea racaljk liuker0x007"
 CUR_DIR='~/.env_xps'
 
 repo_list=($REPO_NAME_LIST)
-#repo_loc_arr=()
-#repo_url_arr=()
-#gen_locdir_and_urlstr_arrays()
-#{
-#    for i in `seq 1 ${#repo_list[@]}`
-#    do
-#        repo_loc_arr[$i-1]="${repo_list[$i-1]}_hosts"
-#        repo_url_arr[$i-1]="https://github.com/${repo_list[$i-1]}/hosts.git"
-#        # for debug
-#        # echo ${repo_loc_arr[$i-1]}
-#        # echo ${repo_url_arr[$i-1]}
-#    done
-#    
-#}
-_put_info()
-{
-    echo -e "\n\033[31m\033[40;32m$1 \033[0m"
-}
 
+_put_info()
+{   
+    _msg="\n\033[31m\033[40;32m$1 \033[0m"
+    echo -e ${_msg}
+}
 _put_warn()
 {
     echo -e "\n\033[31m\033[40;36m$1 \033[0m"
@@ -42,7 +29,7 @@ _put_error()
 {
     echo -e "\n\033[31m\033[40;33m$1 \033[0m"
 }
-
+_put_info  new
 #
 # update_hosts_repo repo_name
 # --------------------------------
@@ -114,34 +101,52 @@ detect_ostype_and_load_hosts()
         is_known=0 
         ;;
     esac
-    if [ $is_known -eq 1 ]
-
+    if [ $ostype=="linux" ]
     then
-        echo -e "\n\033[31m\033[40;36m[.] Detect the OS type is $ostype \033[0m"
-        echo -e "\n\033[31m\033[40;33m[+] Writing the system hosts file... \033[0m"
+        _put_info("[+] Writing the system hosts file... ")
 
         user=`whoami`
         if [ "$user" != "root" ]
         then
+            _put_warn("[s] backup hosts file")
             su root -c "cat $hosts_path  > ${hosts_path}_bak"
+            _put_warn("[s] write the fresh hosts file!")
             su root -c "cat _final_hosts > $hosts_path"
+            _put_info("[+] remove temp files.")
+            rm _final_hosts*
+        else
+            _put_warn("[s] backup hosts file")
+            cat $hosts_path  > ${hosts_path}_bak
+            _put_warn("[s] write the fresh hosts file!")
+            cat _final_hosts > $hosts_path
+            _put_info("[+] remove temp files.")
+            rm _final_hosts*
         fi
+    else if [ $ostype=="msys" ]
+    then
+        _put_warn("[s] backup hosts file")
+        cat $hosts_path  > ${hosts_path}_bak
+        _put_warn("[s] write the fresh hosts file!")
+        cat _final_hosts > $hosts_path
+        _put_info("[+] remove temp files.")
+        rm _final_hosts*
     else
-        echo -e "\n\033[31m\033[40;33m[-] Unable to detect the OS type! \033[0m"
-        echo -e "\n\033[31m\033[40;33m[-] Will exit and leave hosts gundam! \033[0m"
+        _put_error("[-] Unable to detect the OS type!")
+        _put_error("[-] Will exit and leave hosts gundam!")
+        exit
     fi
 }
 
 show_welcome_msg()
 {
-    echo -e "\n\033[31m\033[40;36m[*] Today is $(date +%F\ %r\ %a)\033[0m"
+    _put_info("[*] Today is $(date +%F\ %r\ %a)")
 }
 
-show_leave_msga()
+show_leave_msg()
 {
-    echo -e "\n\033[31m\033[40;36m[O] Done! \033[0m\n"
-    echo -e "\n\033[31m\033[40;36m[K] The new hosts file have $(cat $hosts_path | wc -l) lines \033[0m\n"
-    echo -e "\n\033[31m\033[40;36m[!] Good Luck! :D \033[0m\n"
+    _put_info("[O] Done! \n")
+    _put_info("[K] The new hosts file have $(cat $hosts_path | wc -l) lines \n")
+    _put_info("[!] Good Luck! :D \n")
     head $hosts_path
 }
 
@@ -156,7 +161,7 @@ main()
 }
 
 
-main
+#main
 
 # vim: se ai si et ts=4 sw=4 ft=sh :
 # EOF
