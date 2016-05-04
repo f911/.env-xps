@@ -18,16 +18,16 @@ repo_list=($REPO_NAME_LIST)
 
 _put_info()
 {   
-    _msg="\n\033[31m\033[40;32m$1 \033[0m"
+    _msg="\033[31m\033[40;32m$1 \033[0m"
     echo -e ${_msg}
 }
 _put_warn()
 {
-    echo -e "\n\033[31m\033[40;36m$1 \033[0m"
+    echo -e "\033[31m\033[40;36m$1 \033[0m"
 }
 _put_error()
 {
-    echo -e "\n\033[31m\033[40;33m$1 \033[0m"
+    echo -e "\033[31m\033[40;33m$1 \033[0m"
 }
 
 #
@@ -84,27 +84,29 @@ hosts_path=''
 
 detect_ostype_and_load_hosts()
 {
-    ostype=''
+    ost=''
     is_known=1
     hosts_line_count=0
 
-    case "$OSTYPE" in
+    _put_info "[+] OSTYPE $OSTYPE"
+    case $OSTYPE in
         linux*) 
-            ostype='linux'; 
+            ost='linux' 
             hosts_path='/etc/hosts' 
             ;;
         msys*)  
-            ostype='msys'  
+            ost='msys'  
             hosts_path='/c/Windows/System32/drivers/etc/hosts' 
             ;;
         *)      
-        ostype='unknown' 
+        ost='unknown' 
         is_known=0 
         ;;
     esac
 
-    if [ $ostype=="linux" ]
-    then
+    if [ $ost=="linux" ]
+   then
+        _put_info "[+] detect the os type is linux."
         _put_info "[+] Writing the system hosts file... "
 
         user=`whoami`
@@ -124,14 +126,20 @@ detect_ostype_and_load_hosts()
             _put_info "[+] remove temp files."
             rm _final_hosts*
         fi
-    elif [ $ostype=="msys" ]
+    elif [ $ost=="msys" ]
     then
+        _put_info "[+] detect the os type is msys."
         _put_warn "[s] backup hosts file"
-        cat $hosts_path  > ${hosts_path}_bak
+        #cat $hosts_path  > ${hosts_path}_bak
+        _put_info  "[+] hosts_path: $hosts_path"
+        mv $hosts_path  ${hosts_path}_bak
+        
         _put_warn "[s] write the fresh hosts file!"
-        cat _final_hosts > $hosts_path
+        #cat _final_hosts > $hosts_path
+        #cmd.exe /c "copy "
+        cp -f _final_hosts $hosts_path
         _put_info "[+] remove temp files."
-        rm _final_hosts*
+        #rm _final_hosts*
     else
         _put_error "[-] Unable to detect the OS type!"
         _put_error "[-] Will exit and leave hosts gundam!"
