@@ -18,8 +18,7 @@ repo_list=($REPO_NAME_LIST)
 
 _put_info()
 {   
-    _msg="\n\033[31m\033[40;32m$1 \033[0m"
-    echo -e ${_msg}
+    echo -e "\n\033[31m\033[40;32m$1 \033[0m"
 }
 _put_warn()
 {
@@ -29,7 +28,6 @@ _put_error()
 {
     echo -e "\n\033[31m\033[40;33m$1 \033[0m"
 }
-_put_info  new
 #
 # update_hosts_repo repo_name
 # --------------------------------
@@ -83,70 +81,71 @@ update_and_assemble_final_hosts()
 hosts_path=''
 detect_ostype_and_load_hosts()
 {
-    ostype=''
-    is_known=1
+    _ostype=''
     hosts_line_count=0
 
     case "$OSTYPE" in
         linux*) 
-            ostype='linux'; 
+            _ostype='linux'; 
             hosts_path='/etc/hosts' 
             ;;
         msys*)  
-            ostype='msys'  
+            _ostype='msys'  
             hosts_path='/c/Windows/System32/drivers/etc/hosts' 
+            echo aasdfasdf
             ;;
         *)      
-        ostype='unknown' 
-        is_known=0 
+            _ostype='unknown' 
         ;;
     esac
-    if [ $ostype=="linux" ]
+    echo $_ostype
+    if [ $_ostype=="linux" ]
     then
-        _put_info("[+] Writing the system hosts file... ")
+        _put_info "[+] Writing the system hosts file... "
 
         user=`whoami`
         if [ "$user" != "root" ]
         then
-            _put_warn("[s] backup hosts file")
+            _put_warn "[s] backup hosts file"
             su root -c "cat $hosts_path  > ${hosts_path}_bak"
-            _put_warn("[s] write the fresh hosts file!")
+            _put_warn "[s] write the fresh hosts file!"
             su root -c "cat _final_hosts > $hosts_path"
-            _put_info("[+] remove temp files.")
+            _put_info "[+] remove temp files."
             rm _final_hosts*
         else
-            _put_warn("[s] backup hosts file")
+            _put_warn "[s] backup hosts file"
             cat $hosts_path  > ${hosts_path}_bak
-            _put_warn("[s] write the fresh hosts file!")
+            _put_warn "[s] write the fresh hosts file!"
             cat _final_hosts > $hosts_path
-            _put_info("[+] remove temp files.")
+            _put_info "[+] remove temp files."
             rm _final_hosts*
         fi
-    else if [ $ostype=="msys" ]
+    elif [ $_ostype=="msys" ]
     then
-        _put_warn("[s] backup hosts file")
+        _put_warn "[s] backup hosts file"
         cat $hosts_path  > ${hosts_path}_bak
-        _put_warn("[s] write the fresh hosts file!")
+        _put_warn "[s] write the fresh hosts file!"
         cat _final_hosts > $hosts_path
-        _put_info("[+] remove temp files.")
+        _put_info "[+] remove temp files."
+        unix2dos $hosts_path
         rm _final_hosts*
     else
-        _put_error("[-] Unable to detect the OS type!")
-        _put_error("[-] Will exit and leave hosts gundam!")
+        _put_error "[-] Unable to detect the OS type!"
+        _put_error "[-] Will exit and leave hosts gundam!"
         exit
     fi
 }
 
 show_welcome_msg()
 {
-    _put_info("[*] Today is $(date +%F\ %r\ %a)")
+    _put_info "[*] Today is $(date +%F\ %r\ %a)"
 }
 
 show_leave_msg()
 {
-    _put_info("[O] Done! \n")
-    _put_info("[K] The new hosts file have $(cat $hosts_path | wc -l) lines \n")
-    _put_info("[!] Good Luck! :D \n")
+    _put_info "[O] Done! \n"
+    _put_info "[K] The new hosts file have $(cat $hosts_path | wc -l) lines \n"
+    _put_info "[!] Good Luck! :D \n"
     head $hosts_path
 }
 
@@ -161,7 +160,7 @@ main()
 }
 
 
-#main
+main
 
 # vim: se ai si et ts=4 sw=4 ft=sh :
 # EOF
