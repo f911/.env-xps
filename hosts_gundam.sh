@@ -18,7 +18,8 @@ repo_list=($REPO_NAME_LIST)
 
 _put_info()
 {   
-    echo -e "\n\033[31m\033[40;32m$1 \033[0m"
+    _msg="\n\033[31m\033[40;32m$1 \033[0m"
+    echo -e ${_msg}
 }
 _put_warn()
 {
@@ -28,6 +29,7 @@ _put_error()
 {
     echo -e "\n\033[31m\033[40;33m$1 \033[0m"
 }
+
 #
 # update_hosts_repo repo_name
 # --------------------------------
@@ -79,27 +81,29 @@ update_and_assemble_final_hosts()
 # 0x01 Detect os type
 #
 hosts_path=''
+
 detect_ostype_and_load_hosts()
 {
-    _ostype=''
+    ostype=''
+    is_known=1
     hosts_line_count=0
 
     case "$OSTYPE" in
         linux*) 
-            _ostype='linux'; 
+            ostype='linux'; 
             hosts_path='/etc/hosts' 
             ;;
         msys*)  
-            _ostype='msys'  
+            ostype='msys'  
             hosts_path='/c/Windows/System32/drivers/etc/hosts' 
-            echo aasdfasdf
             ;;
         *)      
-            _ostype='unknown' 
+        ostype='unknown' 
+        is_known=0 
         ;;
     esac
-    echo $_ostype
-    if [ $_ostype=="linux" ]
+
+    if [ $ostype=="linux" ]
     then
         _put_info "[+] Writing the system hosts file... "
 
@@ -120,14 +124,13 @@ detect_ostype_and_load_hosts()
             _put_info "[+] remove temp files."
             rm _final_hosts*
         fi
-    elif [ $_ostype=="msys" ]
+    elif [ $ostype=="msys" ]
     then
         _put_warn "[s] backup hosts file"
         cat $hosts_path  > ${hosts_path}_bak
         _put_warn "[s] write the fresh hosts file!"
         cat _final_hosts > $hosts_path
         _put_info "[+] remove temp files."
-        unix2dos $hosts_path
         rm _final_hosts*
     else
         _put_error "[-] Unable to detect the OS type!"
@@ -164,3 +167,4 @@ main
 
 # vim: se ai si et ts=4 sw=4 ft=sh :
 # EOF
+
